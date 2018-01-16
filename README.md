@@ -1,1 +1,1 @@
-# Azure_training
+# Azure training
