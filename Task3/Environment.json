@@ -1,28 +1,51 @@
 {
-	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-	"contentVersion": "1.0.0.0",
-	"parameters": {
-		"location": {
-			"type": "string"
-		}
-	},
-	"variables": {
-	  "vnetLocation": "[parameters('location')]",
-	  "storageAccountLocation": "[parameters('location')]"
-	},
-	"resources": [
-	  {
-		  "apiVersion": "2015-01-01",
-		  "name": "vnet-template",
-		  "type": "Microsoft.Resources/deployments",
-		  "properties": {
-			  "mode": "Incremental",
-			  "templateLink": {
-				  "uri": "[uri(deployment().properties.template.uri, 'Templates/VNET.json')]",
-				  "contentVersion": "1.0.0.0"
-			  },
-			  "parameters": {
-				  "vnetName": {
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "resLocation": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "vnetLocation": "[parameters('resLocation')]",
+	  "storageAccountLocation": "[parameters('resLocation')]"
+  },
+  "resources": [
+    {
+      "name": "storageAccount",
+      "apiVersion": "2015-01-01",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode":"Incremental",
+        "templateLink":{
+          "uri": "https://raw.githubusercontent.com/aion3181/Azure_training/master/Task3/Templates/SA.json",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters":{
+          "storageAccountType": {
+					  "value": "Standard_LRS"
+				  },
+				  "storageAccountLocation": {
+					  "value": "[variables('storageAccountLocation')]"
+				  },
+				  "storageAccountName": {
+					  "value": "azuretrainingsa1"
+				  }
+        }
+      }
+    },
+    {
+      "name": "VNet",
+      "apiVersion": "2015-01-01",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode":"Incremental",
+        "templateLink":{
+          "uri": "https://raw.githubusercontent.com/aion3181/Azure_training/master/Task3/Templates/VNET.json",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters":{
+          "vnetName": {
 					  "value": "VNet"
 				  },
 				  "vnetAddressPrefix": {
@@ -43,31 +66,10 @@
 				  "vnetLocation": {
 					  "value": "[variables('vnetLocation')]"
 				  }
-			  }
-		  }
-	  },
-	  {
-		  "apiVersion": "2015-01-01",
-		  "name": "storageAccount-template",
-		  "type": "Microsoft.Resources/deployments",
-		  "properties": {
-			  "mode": "Incremental",
-			  "templateLink": {
-				  "uri": "[uri(deployment().properties.template.uri, 'Templates/SA.json')]",
-				  "contentVersion": "1.0.0.0"
-			  },
-			  "parameters": {
-				  "storageAccountType": {
-					  "value": "Standard_LRS"
-				  },
-				  "storageAccountLocation": {
-					  "value": "[variables('storageAccountLocation')]"
-				  },
-				  "storageAccountName": {
-					  "value": "azuretrainingsa1"
-				  }
-			  }
-		  }
-	  }
-	]
+        }
+      }
+    }
+  ],
+  "outputs": {
+  }
 }
