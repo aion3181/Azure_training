@@ -75,12 +75,13 @@
       "apiVersion": "2015-01-01",
       "type": "Microsoft.Resources/deployments",
       "dependsOn": [
-        
+        "storageAccount",
+        "VNet"
       ],
       "properties": {
         "mode": "Incremental",
         "templateLink":{
-          "uri": "??????",
+          "uri": "https://raw.githubusercontent.com/aion3181/Azure_training/master/task4/Templates/VM.json",
           "contentVersion": "1.0.0.0"
         },
         "parameters":{
@@ -88,13 +89,13 @@
             "value": "Standard_A3"
           },
           "virtualMachineName": {
-            "value":"VM_IIS"
+            "value":"VM-IIS"
           },
           "adminUsername": {
-            "value": "admin"
+            "value": "admin12345"
           },
           "adminPassword": {
-            "value": "admin"
+            "value": "admin12345*"
           },
           "storageAccountName": {
             "value": "[variables('storageAccountName')]"
