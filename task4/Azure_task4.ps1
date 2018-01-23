@@ -8,8 +8,10 @@ $TemplateFileSA = "$ScriptPath\Templates\SA.json"
 $TemplateFile = "$ScriptPath\Environment.json"
 $ResourceGroupName = "azuretraining"
 $storageAccountName = "$ResourceGroupName" + "sa2"
-$ContainerName = "Task4"
-$ConfigurationPath = "$ScriptPath\IIS.ps1"
+$ContainerName = "windows-powershell-dsc"
+$Config = "IIS.ps1"
+$ConfigurationPath = "$ScriptPath\$Config"
+$Blob = "$Config" + ".zip"
 
 New-AzureRmResourceGroup -Name $ResourceGroupName -Location $ResourceGroupLocation
 
@@ -20,12 +22,20 @@ New-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroupName `
                                    -storageAccountLocation $resLocation `
                                    -Force -Verbose
 
+<#
+$moduleURL = Publish-AzureRmVMDscConfiguration -ConfigurationPath $ConfigurationPath `
+                                    -ResourceGroupName $ResourceGroupName `
+                                    -StorageAccountName $storageAccountName `
+                                    -Force `
+                                    –ContainerName $ContainerName
+#>
 
 $moduleURL = Publish-AzureRmVMDscConfiguration -ConfigurationPath $ConfigurationPath `
                                     -ResourceGroupName $ResourceGroupName `
                                     -StorageAccountName $storageAccountName `
                                     -Force
-                                    #–ContainerName $ContainerName
+
+
 $moduleURL
 
 $StorageAccountKey = (Get-AzureRmStorageAccountKey -ResourceGroupName $ResourceGroupName `
@@ -35,9 +45,15 @@ $StorageAccountKey = (Get-AzureRmStorageAccountKey -ResourceGroupName $ResourceG
 $storageContext = New-AzureStorageContext –StorageAccountName $storageAccountName `
                                     -StorageAccountKey $StorageAccountKey
 
-$sasToken = New-AzureStorageContainerSASToken –Name $ContainerName `
+<#
+$sasToken = New-AzureStorageBlobSASToken –Name $ContainerName `
                                     –Context $storageContext –Permission r
+#>
+$sasToken = New-AzureStorageBlobSASToken –Container $ContainerName `
+                                        -Blob $Blob `
+                                        –Context $storageContext –Permission r
 
+$sasToken
 
 
 
