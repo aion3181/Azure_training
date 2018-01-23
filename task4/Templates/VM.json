@@ -45,7 +45,8 @@
         "nic": "nic",
         "publicIPAddressName": "publicIp",
         "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnetName'))]",
-        "networkSecurityGroupName": "NSG"
+        "networkSecurityGroupName": "NSG",
+        "ModulesUrl": "[concat(parameters('modulesUrl'), parameters('sasToken'))]"
     },
     "resources": [
         {
@@ -167,7 +168,7 @@
               "typeHandlerVersion": "2.19",
               "autoUpgradeMinorVersion": true,
               "settings": {
-                "ModulesUrl": "[concat(parameters('modulesUrl'), parameters('sasToken'))]",
+                "ModulesUrl": "[variables('ModulesUrl')]",
                 "ConfigurationFunction": "[parameters('configurationFunction')]",
                 "Properties": {
                   "MachineName": "[parameters('virtualMachineName')]"
