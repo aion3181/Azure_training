@@ -4,6 +4,12 @@
   "parameters": {
     "resLocation": {
       "type": "string"
+    },
+    "modulesUrl": {
+      "type": "string"
+    },
+    "sasToken": {
+      "type": "string"
     }
   },
   "variables": {
@@ -105,6 +111,18 @@
           },
           "subnetName": {
             "value": "Front-End"
+          },
+          "modulesUrl": {
+            "value": "[parameters('modulesUrl')]"
+          },
+          "configurationFunction": {
+            "value": "IIS.ps1\\MyDscConfiguration"
+          },
+          "sasToken": {
+            "value": "[parameters('sasToken')]"
+          },
+          "dnsName":{
+            "value": "iisserverazuretr"
           }
         }
       }
