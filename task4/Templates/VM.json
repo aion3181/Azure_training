@@ -39,6 +39,9 @@
         },
         "sasToken": {
             "type": "string"
+        },
+        "dnsName": {
+            "type": "string"
         }
     },
     "variables": {
