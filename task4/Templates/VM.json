@@ -147,7 +147,7 @@
                     {
                         "name": "8080port",
                         "properties": {
-                            "priority": 1000,
+                            "priority": 100,
                             "sourceAddressPrefix": "*",
                             "protocol": "Tcp",
                             "destinationPortRange": "8080",
@@ -155,6 +155,20 @@
                             "direction": "Inbound",
                             "sourcePortRange": "*",
                             "destinationAddressPrefix": "*"
+                        }
+                    },
+                    {
+                        "name": "rdprule",
+                        "properties": {
+                          "description": "This rule allows traffic on port 3389 from the web",
+                          "protocol": "Tcp",
+                          "sourcePortRange": "*",
+                          "destinationPortRange": "3389",
+                          "sourceAddressPrefix": "*",
+                          "destinationAddressPrefix": "*",
+                          "access": "Allow",
+                          "priority": 200,
+                          "direction": "Inbound"
                         }
                     }
                 ]
