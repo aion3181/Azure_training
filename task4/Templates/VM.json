@@ -128,7 +128,10 @@
             "apiVersion": "2017-06-01",
             "location": "[resourceGroup().location]",
             "properties": {
-                "publicIpAllocationMethod": "Dynamic"
+                "publicIpAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[parameters('dnsName')]"
+                  }
             }
         },
         {
