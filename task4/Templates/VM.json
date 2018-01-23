@@ -29,7 +29,7 @@
             "metadata": {
               "description": "URL for the DSC configuration module. NOTE: Can be a Github url(raw) to the zip file"
             }
-          },
+        },
         "configurationFunction": {
             "type": "string",
             "defaultValue": "IIS.ps1\\MyDscConfiguration",
@@ -134,7 +134,7 @@
                 "publicIpAllocationMethod": "Dynamic",
                 "dnsSettings": {
                     "domainNameLabel": "[parameters('dnsName')]"
-                  }
+                }
             }
         },
         {
