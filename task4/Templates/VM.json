@@ -167,15 +167,13 @@
               "typeHandlerVersion": "2.19",
               "autoUpgradeMinorVersion": true,
               "settings": {
-                "ModulesUrl": "[parameters('modulesUrl')]",
+                "ModulesUrl": "[concat(parameters('modulesUrl'), parameters('sasToken'))]",
                 "ConfigurationFunction": "[parameters('configurationFunction')]",
                 "Properties": {
                   "MachineName": "[parameters('virtualMachineName')]"
                 }
               },
-              "protectedSettings": {
-                "configurationUrlSasToken": "[parameters('sasToken')]"
-            }
+              "protectedSettings": null
             }
           }
     ],
