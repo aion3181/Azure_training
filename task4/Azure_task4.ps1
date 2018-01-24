@@ -1,7 +1,7 @@
 $ScriptPath = Split-Path -Parent $PSCommandPath
 
 Login-AzureRMAccount
-Set-AzureRmContext –SubscriptionId bf8f23dc-8f88-417d-8b3b-da7cc4c74793
+Set-AzureRmContext -SubscriptionId bf8f23dc-8f88-417d-8b3b-da7cc4c74793
 $ResourceGroupLocation = "West Europe"
 $resLocation = "West Europe"
 $TemplateFileSA = "$ScriptPath\Templates\SA.json"
@@ -22,13 +22,6 @@ New-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroupName `
                                    -storageAccountLocation $resLocation `
                                    -Force -Verbose
 
-<#
-$moduleURL = Publish-AzureRmVMDscConfiguration -ConfigurationPath $ConfigurationPath `
-                                    -ResourceGroupName $ResourceGroupName `
-                                    -StorageAccountName $storageAccountName `
-                                    -Force `
-                                    –ContainerName $ContainerName
-#>
 
 $moduleURL = Publish-AzureRmVMDscConfiguration -ConfigurationPath $ConfigurationPath `
                                     -ResourceGroupName $ResourceGroupName `
@@ -42,16 +35,13 @@ $StorageAccountKey = (Get-AzureRmStorageAccountKey -ResourceGroupName $ResourceG
                                     -Name $storageAccountName)[0].Value
 
 
-$storageContext = New-AzureStorageContext –StorageAccountName $storageAccountName `
+$storageContext = New-AzureStorageContext -StorageAccountName $storageAccountName `
                                     -StorageAccountKey $StorageAccountKey
 
-<#
-$sasToken = New-AzureStorageBlobSASToken –Name $ContainerName `
-                                    –Context $storageContext –Permission r
-#>
-$sasToken = New-AzureStorageBlobSASToken –Container $ContainerName `
+
+$sasToken = New-AzureStorageBlobSASToken -Container $ContainerName `
                                         -Blob $Blob `
-                                        –Context $storageContext –Permission r
+                                        -Context $storageContext -Permission r
 
 $sasToken
 
@@ -65,8 +55,3 @@ New-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroupName `
                                    -Force -Verbose
 
 
-
-<#
-Test-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroupName `
-  -TemplateFile $TemplateFile -Debug
-#>
