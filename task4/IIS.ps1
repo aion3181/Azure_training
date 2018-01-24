@@ -1,41 +1,39 @@
-Configuration MyDscConfiguration {
-    Import-DscResource -ModuleName PSDesiredStateConfiguration
-    Import-DscResource -ModuleName WebAdministration
+Configuration MyDscConfiguration
+{
+    param ($MachineName)
 
-    param(
-            [string[]]$MachineName
-        )
-    Node $MachineName {
-        {
-        # Install the IIS role
+    Import-DscResource -ModuleName PSDesiredStateConfiguration
+    Import-DscResource -ModuleName xWebAdministration
+    Import-DSCResource -ModuleName xNetworking
+
+    Node $MachineName
+    {
+        #Install the IIS Role
         WindowsFeature IIS
         {
-            Ensure       = 'Present'
-            Name         = 'Web-Server'
-
+            Ensure = 'Present'
+            Name = 'Web-Server'
         }
 
-        # Install the ASP .NET 4.5 role
-        WindowsFeature AspNet45
+        #Install ASP.NET 4.5
+        WindowsFeature ASP
         {
-            Ensure       = 'Present'
-            Name         = 'Web-Asp-Net45'
-
+            Ensure = 'Present'
+            Name = 'Web-Asp-Net45'
         }
 
-        WindowsFeature WebManagementConsole
+        WindowsFeature WebServerManagementConsole
         {
-          Name = "Web-Mgmt-Console"
-          Ensure = "Present"
+            Name = "Web-Mgmt-Console"
+            Ensure = "Present"
         }
 
         WindowsFeature WebManagementService
         {
-          Name = "Web-Mgmt-Service"
-          Ensure = "Present"
+            Name = "Web-Mgmt-Service"
+            Ensure = "Present"
         }
 
-        # default website
         xWebsite DefaultSite 
         {
             Ensure       = 'Present'
@@ -48,13 +46,20 @@ Configuration MyDscConfiguration {
                 Port                  = 8080
             }
             DependsOn    = '[WindowsFeature]IIS'
-
         }
 
-
+        xFirewall Firewall
+        {
+            Name = 'IISport8080'
+            DisplayName = 'Firewall Rule for IIS port 8080'
+            Group = 'NotePad Firewall Rule Group'
+            Ensure = 'Present'
+            Enabled = 'True'
+            Profile = ('Domain', 'Private', 'Public')
+            Direction = 'InBound'
+            LocalPort = ('8080')
+            Protocol = 'TCP'
+            Description = 'Firewall Rule for IIS port 8080'
+        }
     }
-
-    }
-
-
 }
