@@ -55,3 +55,7 @@ New-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroupName `
                                    -Force -Verbose
 
 
+$PubIP = Get-AzureRmPublicIpAddress -ResourceGroupName $ResourceGroupName
+$PubIP = $PubIP.IpAddress
+$check = 'http://' + "$PubIP" + ':8080'
+start $check
