@@ -1,0 +1,99 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "resLocation": {
+      "type": "string"
+    },
+    "VMName": {
+      "type": "string"
+    },
+    "storageAccountName": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "vnetLocation": "[parameters('resLocation')]",
+    "storageAccountLocation": "[parameters('resLocation')]"
+  },
+  "resources": [
+    {
+      "name": "VNet",
+      "apiVersion": "2015-01-01",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode":"Incremental",
+        "templateLink":{
+          "uri": "https://raw.githubusercontent.com/aion3181/Azure_training/master/task7/Templates/VNET.json",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters":{
+          "vnetName": {
+					  "value": "VNet"
+				  },
+				  "vnetAddressPrefix": {
+					  "value": "10.0.0.0/16"
+				  },
+				  "subnet1Prefix": {
+					  "value": "10.0.0.0/24"
+				  },
+				  "subnet1Name": {
+					  "value": "Front-End"
+				  },
+				  "subnet2Prefix": {
+					  "value": "10.0.1.0/24"
+				  },
+				  "subnet2Name": {
+					  "value": "Back-End"
+				  },
+				  "vnetLocation": {
+					  "value": "[variables('vnetLocation')]"
+				  }
+        }
+      }
+    },
+    {
+      "name": "[parameters('VMName')]",
+      "apiVersion": "2015-01-01",
+      "type": "Microsoft.Resources/deployments",
+      "dependsOn": [
+        "VNet"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink":{
+          "uri": "https://raw.githubusercontent.com/aion3181/Azure_training/master/task7/Templates/VM.json",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters":{
+          "virtualMachineSize": {
+            "value": "Standard_A0"
+          },
+          "virtualMachineName": {
+            "value":"[parameters('VMName')]"
+          },
+          "adminUsername": {
+            "value": "admin12345"
+          },
+          "adminPassword": {
+            "value": "admin12345*"
+          },
+          "storageAccountName": {
+            "value": "[parameters('storageAccountName')]"
+          },
+          "virtualNetworkName": {
+            "value": "VNet"
+          },
+          "subnetName": {
+            "value": "Front-End"
+          },
+          "dnsName":{
+            "value": "task7vmserver"
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+  }
+}
