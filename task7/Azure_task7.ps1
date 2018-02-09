@@ -84,10 +84,7 @@ while((Get-AzureRmRecoveryservicesBackupJob -JobId $backupjobid).Status -ne 'Com
 Write-host 'Backup job in progress. Checking status in 10 seconds'
 sleep -Seconds 10 
 }
-<#
-$backupObj = (Get-AzureRmResource | Where-Object{$_.ResourceType -like 'Microsoft.Compute/restorePointCollections'})
-$backupPoint = $backupObj.ResourceId
-#>
+
 $RP = Get-AzureRmRecoveryServicesBackupRecoveryPoint -Item $item
 
 $RestoreJob = Restore-AzureRmRecoveryServicesBackupItem -RecoveryPoint $RP[0] -StorageAccountName $storageAccountName -StorageAccountResourceGroupName $ResourceGroupName
@@ -96,3 +93,36 @@ while((Get-AzureRmRecoveryservicesBackupJob -JobId $RestoreJobid).Status -ne 'Co
 Write-host 'Restore job in progress. Checking status in 10 seconds'
 sleep -Seconds 10 
 }
+
+
+$NewName = (Get-AzureRmResource | Where-Object{$_.ResourceType -like 'Microsoft.Compute/disks'}).Name
+$NewName
+
+$StorageAccountKey = (Get-AzureRmStorageAccountKey -ResourceGroupName $ResourceGroupName `
+                                    -Name $storageAccountName)[0].Value
+
+$storageContext = New-AzureStorageContext -StorageAccountName $storageAccountName `
+                                    -StorageAccountKey $StorageAccountKey
+
+$Container = (Get-AzureStorageContainer -Name * -Context $storageContext)
+
+$blob = (Get-AzureStorageBlob -Container $Container.Name -Context $storageContext)
+foreach($blobitem in $blob){
+    if(!($blobitem.Name.Contains('config')) -and ($blobitem.Name.Contains('.vhd'))){
+    $blobtocopy = $blobitem.Name
+    }
+}
+$blobtocopy
+
+Start-AzureStorageBlobCopy -SrcBlob $blobtocopy -SrcContainer $Container.Name `
+                            -DestContainer $Container.Name -DestBlob $NewName `
+                            -Context $storageContext
+
+
+while((Get-AzureStorageBlobCopyState -Context $storageContext -Blob $NewName -Container $Container.Name).Status -ne 'Success'){
+Write-host 'Blob copy in progress. Checking status in 10 seconds'
+sleep -Seconds 10 
+}
+
+
+
