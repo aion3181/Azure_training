@@ -1,0 +1,112 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "accountName": {
+            "type": "string"
+        },
+        "jobId": {
+            "type": "string"
+        },
+        "credentialName": {
+            "type": "string",
+            "defaultValue": "DefaultAzureCredential"
+        },
+        "userName": {
+            "type": "string"
+        },
+        "password": {
+            "type": "securestring"
+        },
+        "runbookName": {
+            "type": "string"
+        },
+        "scriptUri": {
+            "type": "string"
+        },
+        "AzureVM": {
+            "type": "string"
+        },
+        "SubscriptionId": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "sku": "Free"
+    },
+    "resources": [
+        {
+            "name": "[parameters('accountName')]",
+            "type": "Microsoft.Automation/automationAccounts",
+            "apiVersion": "2015-10-31",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [ ],
+            "tags": { },
+            "properties": {
+                "sku": {
+                    "name": "[variables('sku')]"
+                }
+            },
+            "resources": [
+                {
+                    "name": "[parameters('runbookName')]",
+                    "type": "runbooks",
+                    "apiVersion": "2015-10-31",
+                    "location": "[resourceGroup().location]",
+                    "dependsOn": [
+                      "[concat('Microsoft.Automation/automationAccounts/', parameters('accountName'))]"
+                    ],
+                    "tags": { },
+                    "properties": {
+                        "runbookType": "Script",
+                        "logProgress": false,
+                        "logVerbose": false,
+                        "publishContentLink": {
+                            "uri": "[parameters('scriptUri')]",
+                            "version": "1.0.0.0"
+                        }
+                    }
+                },
+                {
+                    "name": "[parameters('credentialName')]",
+                    "type": "credentials",
+                    "apiVersion": "2015-10-31",
+                    "location": "[resourceGroup().location]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Automation/automationAccounts/', parameters('accountName'))]"
+                    ],
+                    "tags": { },
+                    "properties": {
+                        "userName": "[parameters('userName')]",
+                        "password": "[parameters('password')]"
+                    }
+                },
+                {
+                    "name": "[parameters('jobId')]",
+                    "type": "jobs",
+                    "apiVersion": "2015-10-31",
+                    "location": "[resourceGroup().location]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Automation/automationAccounts/', parameters('accountName'))]",
+                        "[concat('Microsoft.Automation/automationAccounts/', parameters('accountName'), '/runbooks/', parameters('runbookName'))]",
+                        "[concat('Microsoft.Automation/automationAccounts/', parameters('accountName'), '/credentials/', parameters('credentialName'))]"
+                    ],
+                    "tags": {
+                        "key": "value"
+                    },
+                    "properties": {
+                        "runbook": {
+                            "name": "[parameters('runbookName')]"
+                        },
+                        "parameters":{
+                            "AzureSubscriptionId": "[parameters('SubscriptionId')]",
+                            "AzureCredential":"[parameters('credentialName')]",
+                            "AzureVM":"[parameters('AzureVM')]"
+                        }
+                    }
+                }
+            ]
+        }
+    ],
+    "outputs": {}
+}
